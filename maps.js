@@ -11,17 +11,34 @@ app.service('Map', function ($q) {
             mapTypeId: 'roadmap',
         });
 
+        var service = new google.maps.places.PlacesService(map);
         var marker = new google.maps.Marker({
-            position: myLatLng,
             map: map,
-            title: 'Helpster Indonesia',
+            position: myLatLng,
+            draggable: true,
+        });
+
+        var request = {
+            location: map.getCenter(),
+            radius: '500',
+            query: 'Google Sydney'
+          };
+
+        service.getDetails({
+            placeId: 'ChIJN1t_tDeuEmsRUsoyG83frY4'
+        }, function (place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                google.maps.event.addListener(marker, 'dragend', function () {
+                    console.log(place.formatted_address);
+                });
+            }
         });
 
         // Create the search box and link it to the UI element.
         var input = document.getElementById('input-address');
         var searchBox = new google.maps.places.SearchBox(input);
         //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-        
+
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function () {
